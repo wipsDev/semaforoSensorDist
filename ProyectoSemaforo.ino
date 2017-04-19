@@ -1,71 +1,135 @@
-//  _ ___ _______     ___ ___ ___  ___ _   _ ___ _____ ___ 
-// / |_  )__ /   \   / __|_ _| _ \/ __| | | |_ _|_   _/ __| 
-// | |/ / |_ \ |) | | (__ | ||   / (__| |_| || |  | | \__ \ 
-// |_/___|___/___/   \___|___|_|_\\___|\___/|___| |_| |___/ 
-// 
-// Proyecto Semaforo
-// 
-// Made by edgar hernandez molina
-// License: CC-BY-SA 3.0
-// Downloaded from: https://circuits.io/circuits/4640335-the-unnamed-circuit
+const int EchoPin = 12;
+const int TriggerPin = 11;
 
-// Pin 13 has an LED connected on most Arduino boards.
-// give it a name:
-int ledV = 5;
-int ledR = 6;
-int ledA = 7;
+int ledV = 6;
+int ledR = 7;
+int ledA = 5;
+int PrimeraVez2 = true;
+int PrimeraVez1 = true;
 
-// the setup routine runs once when you press reset:
+ 
 void setup() {
-  // initialize the digital pin as an output.
-  pinMode(ledV, OUTPUT);
-  pinMode(ledR , OUTPUT) ;
-  pinMode(ledA , OUTPUT) ;
-  
+ Serial.begin(9600);
+ pinMode(ledV, OUTPUT);
+ pinMode(ledR , OUTPUT) ;
+ pinMode(ledA , OUTPUT) ;
+ pinMode(TriggerPin, OUTPUT);
+ pinMode(EchoPin, INPUT);
 }
-
-// the loop routine runs over and over again forever:
+ 
 void loop() {
+
   
-  digitalWrite(ledV, HIGH);   // turn the LED on 
-  delay(7000);               // wait 
-  digitalWrite(ledV, LOW);    // turn the LED off
-  delay(500);               // wait 
+ int cm = ping(TriggerPin, EchoPin);
+ //Serial.print("Distancia: ");
+ //Serial.println(cm);
+
+  if (cm==0){
+    Serial.println ("No hay sensor conectado1");
+  };
   
-  digitalWrite(ledR, HIGH);   // turn the LED on 
-  delay(1000);               // wait
-  digitalWrite(ledR, LOW);    // turn the LED off 
-  delay(1000);               // wait
+  if (cm<40 && cm > 2 && PrimeraVez1 == true){
+    
+    digitalWrite(ledR, LOW);    // turn the LED off 
+    delay(1000); 
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500);
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500);
+    digitalWrite(ledV, HIGH);   // turn the LED on 
+
+    
+    PrimeraVez2 = true;
+    PrimeraVez1 = false;
+    
+    };
+
   
-  digitalWrite(ledA, HIGH);   // turn the LED on
-  delay(2000);               // wait 
-  digitalWrite(ledA, LOW);    // turn the LED off
-  delay(500);               // wait
+    if (cm>40  && PrimeraVez2 == true) { 
+      
+    
+    digitalWrite(ledV, LOW);    // turn the LED off 
+    delay(1000); 
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500);
+    digitalWrite(ledA, HIGH);   // turn the LED on 
+    delay(500); 
+    digitalWrite(ledA, LOW);   // turn the LED on 
+    delay(500);
+    digitalWrite(ledR, HIGH);   // turn the LED on
+    PrimeraVez2 = false;
+    PrimeraVez1 = true;
+    
+      };
+      
+    if (cm==0) { 
+    
+          //Encendemos el led verde
+          
+        digitalWrite(ledV, HIGH);   
+        delay(10000);               
+        digitalWrite(ledV, LOW);   
+        delay(100);               
+      
+          // hacemos que el led Amaillo parpadee antes de encender el verde
+          
+        digitalWrite(ledA, HIGH);   
+        delay(500);               
+        digitalWrite(ledA, LOW);    
+        delay(500);                 
+        digitalWrite(ledA, HIGH);   
+        delay(500);                
+        digitalWrite(ledA, LOW);    
+        delay(500);               
+        digitalWrite(ledA, HIGH);   
+        delay(500);                
+        digitalWrite(ledA, LOW);    
+        delay(500);               
+        digitalWrite(ledA, HIGH);  
+        delay(500);               
+        digitalWrite(ledA, LOW);   
+        delay(500);
+                       
+          //Encendemos el led verde
+          
+        digitalWrite(ledR, HIGH);   
+        delay(10000);               
+        digitalWrite(ledR, LOW);    
+
+
   
   
-  // hacemos que el led rojo parpadee antes de encender el verde
-  
-  digitalWrite(ledA, HIGH);   // turn the LED on
-  delay(500);               // wait 
-  digitalWrite(ledA, LOW);    // turn the LED off
-  delay(500);               // wait
-  
-  digitalWrite(ledA, HIGH);   // turn the LED on
-  delay(500);               // wait 
-  digitalWrite(ledA, LOW);    // turn the LED off
-  delay(500);               // wait
-  
-  digitalWrite(ledA, HIGH);   // turn the LED on
-  delay(500);               // wait 
-  digitalWrite(ledA, LOW);    // turn the LED off
-  delay(500);               // wait
-  
+    };
+
 }
 
+//Funcion para controlar el sensor de distancia
 
-
-
-
-
-
-
+int ping(int TriggerPin, int EchoPin) {
+ long duration, distanceCm;
+ 
+ digitalWrite(TriggerPin, LOW);
+ delayMicroseconds(4);
+ digitalWrite(TriggerPin, HIGH);  //generamos Trigger (disparo) de 10us
+ delayMicroseconds(10);
+ digitalWrite(TriggerPin, LOW);
+ 
+ duration = pulseIn(EchoPin, HIGH);  //medimos el tiempo entre pulsos, en microsegundos
+ 
+ distanceCm = duration * 10 / 292/ 2;   //convertimos a distancia, en cm
+ return distanceCm;
+}
